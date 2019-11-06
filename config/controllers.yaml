@@ -5,8 +5,11 @@ services:
       arguments:
         - '%build_revision%'
 
-#    render_controller:
-#      public: true
-#      class: App\Controller\RenderController
-#      arguments:
-#        $templatingService: '@templating_service'
+    auth_controller:
+      public: true
+      class: App\Authentication\AuthController
+      arguments:
+        $userProvider: '@user_provider'
+        $authService: '@auth_service'
+        $passwordService: '@password_service'
+

@@ -12,4 +12,19 @@ services:
     App\Response\JsonDataResponseHandler:
         tags:
             - { name: kernel.event_listener, event: kernel.view }
+    App\Authentication\AuthenticationListener:
+        arguments:
+            - '@auth_service'
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller }
 
+    auth_service:
+        class: App\Authentication\SimpleAuthService
+
+    user_provider:
+        class: App\User\SqlUserProvider
+
+    password_service:
+        class: App\Authentication\PasswordService
+        arguments:
+            $salt: '%env(APP_SECRET)%'

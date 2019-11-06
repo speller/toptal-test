@@ -26,6 +26,18 @@ class Commons
     }
 
     /**
+     * Shortcut for object property value extraction. Casts to Int.
+     * @param \stdClass $object
+     * @param string $prop
+     * @param null $default Default value
+     * @return int|null
+     */
+    public static function valueOInt(\stdClass $object, string $prop, $default = null)
+    {
+        return property_exists($object, $prop) ? (int)$object->$prop : $default;
+    }
+
+    /**
      * Crates temp file which will be deleted after script executed. Returns file name and file handle.
      * @return array
      * @throws \Throwable

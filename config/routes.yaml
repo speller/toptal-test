@@ -1,8 +1,13 @@
 health-check:
-    path: /health-check
-    controller: health_check:healthCheck
+  path: /health-check
+  controller: health_check:healthCheck
 
-#render:
-#    path: /v1/render
-#    methods: [POST]
-#    controller: render_controller:render
+signin:
+  path: /signin
+  methods: [POST]
+  controller: auth_controller:signIn
+
+register:
+  path: /register
+  methods: [POST]
+  controller: auth_controller:register
