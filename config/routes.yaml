@@ -11,3 +11,23 @@ register:
   path: /register
   methods: [POST]
   controller: auth_controller:register
+
+task_add:
+  path: /task-add
+  methods: [POST]
+  controller: task_controller:addTask
+
+task_update:
+  path: /task-update
+  methods: [POST]
+  controller: task_controller:updateTask
+
+task_dlete:
+  path: /task-delete
+  methods: [POST]
+  controller: task_controller:deleteTask
+
+task_list:
+  path: /task-list
+  methods: [GET]
+  controller: task_controller:listTasks
