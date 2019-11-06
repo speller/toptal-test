@@ -33,15 +33,17 @@ interface TaskProviderInterface
     public function updateTask(Task $task): void;
 
     /**
-     * Returns list of Tasks filtered by the date range and the list of user roles
+     * Returns list of Tasks filtered by the search criteria.
      * @param \DateTime $dateBegin
      * @param \DateTime $dateLast
-     * @param array $userRoles
+     * @param int $userId
+     * @param array $addUserRoles Additional user roles whose tasks should be included.
      * @return Task[]
      */
     public function searchTasks(
         \DateTime $dateBegin,
         \DateTime $dateLast,
-        array $userRoles
+        int $userId,
+        array $addUserRoles
     ): array;
 }

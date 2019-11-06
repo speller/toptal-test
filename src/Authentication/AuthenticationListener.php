@@ -34,7 +34,8 @@ class AuthenticationListener
             $controller = $controller[0];
         }
         if ($controller instanceof RequireAuthenticationInterface) {
-            $this->authService->authenticateRequest($event->getRequest());
+            [$userId, $role] = $this->authService->authenticateRequest($event->getRequest());
+            $controller->setCurrentUserContext($userId, $role);
         }
     }
 }

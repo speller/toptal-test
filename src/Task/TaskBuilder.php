@@ -22,6 +22,10 @@ class TaskBuilder
      * @var float
      */
     private $duration;
+    /**
+     * @var string
+     */
+    private $title;
 
     /**
      * Creates new Task object
@@ -34,6 +38,7 @@ class TaskBuilder
             (int)$this->userId,
             $this->date,
             (float)$this->duration,
+            (string)$this->title,
         );
     }
     /**
@@ -57,11 +62,15 @@ class TaskBuilder
     }
 
     /**
-     * @param \DateTime $date
+     * @param \DateTime|string $date
      * @return TaskBuilder
+     * @throws \Exception
      */
     public function setDate($date)
     {
+        if (is_string($date)) {
+            $date = new \DateTime($date);
+        }
         $this->date = $date;
         return $this;
     }
@@ -73,6 +82,16 @@ class TaskBuilder
     public function setDuration($duration)
     {
         $this->duration = $duration;
+        return $this;
+    }
+
+    /**
+     * @param string $title
+     * @return TaskBuilder
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
         return $this;
     }
 }

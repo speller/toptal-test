@@ -51,8 +51,7 @@ class AuthController
      */
     public function signIn(Request $request)
     {
-        $inputData = $request->getContent();
-        $data = InputParamUtils::parseAsJson($inputData);
+        $data = InputParamUtils::parseJsonRequest($request);
         $login = Commons::valueO($data, 'login');
         $password = Commons::valueO($data, 'password');
         $user =
@@ -79,8 +78,7 @@ class AuthController
      */
     public function register(Request $request)
     {
-        $inputData = $request->getContent();
-        $data = InputParamUtils::parseAsJson($inputData);
+        $data = InputParamUtils::parseJsonRequest($request);
         $login = Commons::valueO($data, 'login');
         $password = Commons::valueO($data, 'password');
         $role = Commons::valueOInt($data, 'role');

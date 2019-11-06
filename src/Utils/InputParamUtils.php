@@ -9,6 +9,7 @@
 namespace App\Utils;
 
 use App\Exception\RequestFailException;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Utilities for input parameters parsing routines.
@@ -32,5 +33,16 @@ class InputParamUtils
             throw new RequestFailException('Invalid input data (must be in JSON format)', 0, $e);
         }
         return $data;
+    }
+
+    /**
+     * Returns JSON from request body
+     * @param Request $request
+     * @return mixed
+     * @throws RequestFailException
+     */
+    public static function parseJsonRequest(Request $request)
+    {
+        return self::parseAsJson($request->getContent());
     }
 }

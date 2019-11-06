@@ -22,6 +22,10 @@ class Task
      * @var float
      */
     private $duration;
+    /**
+     * @var string
+     */
+    private $title;
 
     /**
      * Task constructor.
@@ -29,17 +33,20 @@ class Task
      * @param int $userId
      * @param \DateTime $date
      * @param float $duration
+     * @param string $title
      */
     public function __construct(
         int $id,
         int $userId,
         \DateTime $date,
-        float $duration
+        float $duration,
+        string $title
     ){
         $this->id = $id;
         $this->userId = $userId;
         $this->date = $date;
         $this->duration = $duration;
+        $this->title = $title;
     }
 
     /**
@@ -81,5 +88,13 @@ class Task
     public function getDuration()
     {
         return $this->duration;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 }

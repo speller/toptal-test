@@ -2,8 +2,6 @@
 namespace App\Authentication;
 
 use App\User\User;
-use App\Utils\Commons;
-use App\Utils\InputParamUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,15 +17,17 @@ class SimpleAuthService implements AuthServiceInterface
      */
     public function authenticateRequest(Request $request): array
     {
-        $inputData = $request->getContent();
-        $data = InputParamUtils::parseAsJson($inputData);
-        $token = Commons::valueO($data, 'accessToken');
-        if (!$token) {
+        if (!$request->headers->has('authentication')) {
             throw new \RuntimeException('Authentication required');
+        }
+        $token = $request->headers->get('authentication');
+        [$type, $token] = explode(' ', $token);
+        if (strtolower($type) !== 'bearer' || !$token) {
+            throw new \RuntimeException('Invalid authentication data');
         }
         [$userId, $role] = explode(':', $token);
         if ($userId === null || $role === null) {
-            throw new \RuntimeException('Authentication required');
+            throw new \RuntimeException('Invalid authentication data');
         }
         return [(int)$userId, (int)$role];
     }

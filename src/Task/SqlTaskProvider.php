@@ -1,8 +1,5 @@
 <?php
-namespace Task;
-
-use App\Task\Task;
-use App\Task\TaskProviderInterface;
+namespace App\Task;
 
 /**
  * MySQL Task data provider
@@ -12,10 +9,11 @@ class SqlTaskProvider implements TaskProviderInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function findTaskById(int $id): ?Task
     {
-        return Task::build()->setId(1)->setDuration(1)->setDate(new \DateTime())->create();
+        return Task::build()->setId(1)->setDuration(1)->setUserId(1)->setDate(new \DateTime())->create();
     }
 
     /**
@@ -44,9 +42,15 @@ class SqlTaskProvider implements TaskProviderInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
-    public function searchTasks(\DateTime $dateBegin, \DateTime $dateLast, array $userRoles): array
+    public function searchTasks(
+        \DateTime $dateBegin,
+        \DateTime $dateLast,
+        int $userId,
+        array $addUserRoles
+    ): array
     {
-        return [Task::build()->setId(1)->setDuration(1)->setDate(new \DateTime())->create()];
+        return [Task::build()->setId(1)->setDuration(1)->setUserId(1)->setDate(new \DateTime())->create()];
     }
 }
