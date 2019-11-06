@@ -1,7 +1,9 @@
 <?php
 namespace App\User;
 
-
+/**
+ * MySQL DB User Provider
+ */
 class SqlUserProvider implements UserProviderInterface
 {
 

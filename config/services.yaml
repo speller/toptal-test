@@ -28,3 +28,7 @@ services:
         class: App\Authentication\PasswordService
         arguments:
             $salt: '%env(APP_SECRET)%'
+
+    task_provider:
+        class: App\Task\SqlTaskProvider
+
