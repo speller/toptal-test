@@ -1,10 +1,11 @@
 imports:
     - { resource: controllers.yaml }
 
+db_config:
+  connections:
+    - { name: master, dsn: '%env(DB_CONNECTION)%' }
+
 parameters:
-  db_config:
-    connections:
-      - { name: master, dsn: '%env(DB_CONNECTION)%' }
 
 services:
     App\Exception\DefaultExceptionHandler:
