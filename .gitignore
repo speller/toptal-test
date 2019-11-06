@@ -1,0 +1,14 @@
+.idea
+/.env
+/public/bundles/
+/var/
+/vendor/
+.phpunit
+/composer.sh
+/composer.phar
+/rr/
+.dockerignore
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###

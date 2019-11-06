@@ -1,0 +1,12 @@
+services:
+    health_check:
+      public: true
+      class: App\Controller\HealthCheckController
+      arguments:
+        - '%build_revision%'
+
+#    render_controller:
+#      public: true
+#      class: App\Controller\RenderController
+#      arguments:
+#        $templatingService: '@templating_service'

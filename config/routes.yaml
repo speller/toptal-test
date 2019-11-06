@@ -1,0 +1,8 @@
+health-check:
+    path: /health-check
+    controller: health_check:healthCheck
+
+#render:
+#    path: /v1/render
+#    methods: [POST]
+#    controller: render_controller:render
