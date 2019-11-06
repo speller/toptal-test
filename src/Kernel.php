@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Db\DependencyInjection\DbExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -43,7 +44,7 @@ class Kernel extends BaseKernel
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
     {
         $confDir = $this->getProjectDir().'/config';
-
+        $container->registerExtension(new DbExtension());
         $container->addResource(new FileResource($confDir.'/bundles.php'));
         $container->setParameter('container.dumper.inline_class_loader', true);
         $revisionFile = $this->getProjectDir() . '/image-tag.txt';

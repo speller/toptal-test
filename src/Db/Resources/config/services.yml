@@ -1,0 +1,5 @@
+services:
+    connection_manager:
+        class: 'App\Db\PdoConnectionFactory'
+        arguments: ['%db.config%']
+        lazy: true
