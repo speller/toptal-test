@@ -2,6 +2,9 @@ imports:
     - { resource: controllers.yaml }
 
 parameters:
+  db_config:
+    connections:
+      - { name: master, dsn: '%env(DB_CONNECTION)%' }
 
 services:
     App\Exception\DefaultExceptionHandler:
@@ -23,6 +26,8 @@ services:
 
     user_provider:
         class: App\User\SqlUserProvider
+        arguments:
+          $connection: '@master_connection'
 
     password_service:
         class: App\Authentication\PasswordService
@@ -31,4 +36,6 @@ services:
 
     task_provider:
         class: App\Task\SqlTaskProvider
+        arguments:
+          $connection: '@master_connection'
 

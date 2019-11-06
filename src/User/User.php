@@ -91,6 +91,14 @@ class User implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getPasswordHash()
+    {
+        return $this->passwordHash;
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize()
