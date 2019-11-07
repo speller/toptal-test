@@ -56,25 +56,16 @@ class TaskController implements RequireAuthenticationInterface
     public function addTask(Request $request)
     {
         $data = InputParamUtils::parseJsonRequest($request);
-        $duration = Commons::valueO($data, 'duration');
-        $date = Commons::valueO($data, 'date');
-        $title = Commons::valueO($data, 'title');
-        if (!$title) {
-            return JsonData::error("Title must not be empty");
-        }
-        if (!$date) {
-            return JsonData::error("Date must not be empty");
-        }
-        if ($duration <= 0) {
-            return JsonData::error("Duration must be a positive number");
+        if ($errors = $this->getTaskInputErrors($data)) {
+            return JsonData::error('Error in input data: ' . implode(', ', $errors));
         }
 
         $id = $this->taskProvider->addTask(
             Task::build()
                 ->setUserId($this->currentUserId)
-                ->setDate($date)
-                ->setDuration($duration)
-                ->setTitle($title)
+                ->setDate(Commons::valueO($data, 'date'))
+                ->setDuration(Commons::valueO($data, 'duration'))
+                ->setTitle(Commons::valueO($data, 'title'))
                 ->create()
         );
         return JsonData::data($id);
@@ -99,8 +90,8 @@ class TaskController implements RequireAuthenticationInterface
         }
         $tasks =
             $this->taskProvider->searchTasks(
-                \DateTime::createFromFormat('Y-m-d', $dateBegin),
-                \DateTime::createFromFormat('Y-m-d', $dateLast),
+                \DateTime::createFromFormat('Y-m-d', $dateBegin)->setTime(0, 0, 0),
+                \DateTime::createFromFormat('Y-m-d', $dateLast)->setTime(0, 0, 0),
                 $this->currentUserId,
                 $addRoles
             );
@@ -119,8 +110,11 @@ class TaskController implements RequireAuthenticationInterface
         $data = InputParamUtils::parseJsonRequest($request);
         $id = Commons::valueOInt($data, 'id');
         $task = $this->taskProvider->findTaskById($id);
-        if (!$task || !$this->checkOwnership($task)) {
-            throw new \RuntimeException('Task not found');
+        if (!$task || !$this->checkAccess($task)) {
+            return JsonData::error('Task not found');
+        }
+        if ($errors = $this->getTaskInputErrors($data)) {
+            return JsonData::error('Error in input data: ' . implode(', ', $errors));
         }
         $this->taskProvider->updateTask(
             Task::build()
@@ -130,7 +124,30 @@ class TaskController implements RequireAuthenticationInterface
                 ->setDate(Commons::valueO($data, 'date'))
                 ->create()
         );
-        return JsonData::data('OK');
+        return JsonData::success();
+    }
+
+    /**
+     * Returns array of errors in input data for new and updated tasks
+     * @param $data
+     * @return array
+     */
+    protected function getTaskInputErrors($data): array
+    {
+        $result = [];
+        $duration = Commons::valueO($data, 'duration');
+        $date = Commons::valueO($data, 'date');
+        $title = Commons::valueO($data, 'title');
+        if (!$title) {
+            $result[] = 'Title must not be empty';
+        }
+        if (!$date) {
+            $result[] = 'Date must not be empty';
+        }
+        if ($duration <= 0) {
+            $result[] = 'Duration must be a positive number';
+        }
+        return $result;
     }
 
     /**
@@ -138,17 +155,19 @@ class TaskController implements RequireAuthenticationInterface
      * @param Task $task
      * @return bool
      */
-    protected function checkOwnership(Task $task): bool
+    protected function checkAccess(Task $task): bool
     {
         if ($task->getUserId() == $this->currentUserId) {
             return true;
         }
-        $taskUser = $this->userProvider->findUserById($task->getUserId());
-        switch ($this->currentRole) {
-            case UserRole::MANAGER:
-                return in_array($taskUser->getRole(), [UserRole::USER]);
-            case UserRole::ADMIN:
-                return in_array($taskUser->getRole(), [UserRole::USER, UserRole::MANAGER, UserRole::ADMIN]);
+        if ($this->currentRole != UserRole::USER) {
+            $taskUser = $this->userProvider->findUserById($task->getUserId());
+            switch ($this->currentRole) {
+                case UserRole::MANAGER:
+                    return in_array($taskUser->getRole(), [UserRole::USER]);
+                case UserRole::ADMIN:
+                    return in_array($taskUser->getRole(), [UserRole::USER, UserRole::MANAGER, UserRole::ADMIN]);
+            }
         }
         return false;
     }
@@ -164,11 +183,11 @@ class TaskController implements RequireAuthenticationInterface
         $data = InputParamUtils::parseJsonRequest($request);
         $id = Commons::valueOInt($data, 'id');
         $task = $this->taskProvider->findTaskById($id);
-        if (!$task || !$this->checkOwnership($task)) {
-            throw new \RuntimeException('Task not found');
+        if (!$task || !$this->checkAccess($task)) {
+            return JsonData::error('Task not found');
         }
         $this->taskProvider->deleteTask($id);
-        return JsonData::data('OK');
+        return JsonData::success();
     }
 
     /**
