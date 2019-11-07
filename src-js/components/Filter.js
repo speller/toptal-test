@@ -5,6 +5,11 @@ import makeStyles from '@material-ui/core/styles/makeStyles'
 import TextField from '@material-ui/core/TextField'
 import { lighten } from '@material-ui/core/styles'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import MomentUtils from '@date-io/moment'
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers'
 
 const useStyles = theme => ({
   filtersBlock: {
@@ -17,7 +22,7 @@ const useStyles = theme => ({
   },
 
   filterInput: {
-    width: '8rem',
+    width: '8.5rem',
     marginLeft: theme.spacing(2) + 'px !important',
     marginRight: theme.spacing(2) + 'px !important',
     marginTop: '0 !important',
@@ -36,19 +41,19 @@ function Filter(props) {
     _setState({ ...state, ...props })
   }
   useEffect(() => {
-    setState({hoursPerDay})
+    setState({ hoursPerDay })
   }, [hoursPerDay])
 
   const handleChangeHoursPerDay = event => {
-    setState({hoursPerDay: event.target.value})
+    setState({ hoursPerDay: event.target.value })
   }
 
   const handleChangeDateFrom = event => {
-    setState({dateFrom: event.target.value})
+    setState({ dateFrom: event.target.value })
   }
 
   const handleChangeDateTo = event => {
-    setState({dateTo: event.target.value})
+    setState({ dateTo: event.target.value })
   }
 
   const handleFilter = event => {
@@ -64,37 +69,53 @@ function Filter(props) {
 
   return (
     <form className={classes.filtersBlock} onSubmit={handleFormSubmit}>
-      <TextField
-        className={classes.filterInput}
-        label="Hours per day"
-        margin="dense"
-        onChange={handleChangeHoursPerDay}
-        value={state.hoursPerDay}
-      />
-      <TextField
-        className={classes.filterInput}
-        label="Date from"
-        margin="dense"
-        onChange={handleChangeDateFrom}
-        value={state.dateFrom}
-      />
-      <TextField
-        className={classes.filterInput}
-        label="Date to"
-        margin="dense"
-        onChange={handleChangeDateTo}
-        value={state.dateTo}
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        startIcon={<FontAwesomeIcon icon="filter"/>}
-        onClick={handleFilter}
-        type="submit"
-      >
-        Filter
-      </Button>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <TextField
+          className={classes.filterInput}
+          label="Hours per day"
+          margin="dense"
+          onChange={handleChangeHoursPerDay}
+          value={state.hoursPerDay}
+        />
+        <KeyboardDatePicker
+          className={classes.filterInput}
+          disableToolbar
+          variant="inline"
+          format="YYYY-MM-DD"
+          id="date-picker-inline"
+          label="Date from"
+          margin="dense"
+          onChange={handleChangeDateFrom}
+          value={state.dateFrom}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        <KeyboardDatePicker
+          className={classes.filterInput}
+          disableToolbar
+          variant="inline"
+          format="YYYY-MM-DD"
+          id="date-picker-inline"
+          label="Date to"
+          margin="dense"
+          onChange={handleChangeDateTo}
+          value={state.dateTo}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<FontAwesomeIcon icon="filter"/>}
+          onClick={handleFilter}
+          type="submit"
+        >
+          Filter
+        </Button>
+      </MuiPickersUtilsProvider>
     </form>
   )
 }
