@@ -78,12 +78,15 @@ class UserController implements RequireAuthenticationInterface
             return JsonData::error("Working hours must be a positive number");
         }
         $user = $this->userProvider->findUserById($this->currentUserId);
+        if (!$user) {
+            return JsonData::error('User not found');
+        }
         $user = User::build()
             ->assignFrom($user)
             ->setWorkingHoursPerDay($hours)
             ->create();
         $this->userProvider->updateUser($user);
-        return JsonData::data('OK');
+        return JsonData::success();
     }
 
     /**

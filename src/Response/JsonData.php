@@ -36,6 +36,18 @@ class JsonData
     }
 
     /**
+     * Creates successful result without data
+     * @return JsonData
+     */
+    public static function success(): JsonData
+    {
+        $r = new self();
+        $r->success = true;
+        $r->msg = 'OK';
+        return $r;
+    }
+
+    /**
      * Creates error result
      * @param string $msg
      * @param int $code

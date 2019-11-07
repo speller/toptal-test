@@ -2,7 +2,8 @@
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": "^7.3.0",
+      "php": "^7.3.0",
+      "ext-json": "*",
         "nelmio/cors-bundle": "^1.5",
         "pear/http_request2": "^2.3",
         "spiral/roadrunner": "^1.3",
