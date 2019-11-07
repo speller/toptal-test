@@ -3,6 +3,7 @@
     "license": "proprietary",
     "require": {
         "php": "^7.3.0",
+        "nelmio/cors-bundle": "^1.5",
         "pear/http_request2": "^2.3",
         "spiral/roadrunner": "^1.3",
         "symfony/console": "4.2.*",

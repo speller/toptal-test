@@ -28,14 +28,22 @@ export const apiCallGet = (actionUrl, payload, accessToken) => {
 }
 
 export function validateApiResult(result) {
-  if (result === void 0) {
-    throw new Error('Undefined result')
+  if (result.status !== 200) {
+    throw new Error(`API call failed with HTTP response code ${result.status}${`: ${getMessageFromResponse(result)}` ?? ''}`)
   }
-  if (!isObject(result)) {
+  const apiResult = result.data
+  if (!apiResult) {
+    throw new Error('Undefined API result')
+  }
+  if (!isObject(apiResult)) {
     throw new Error('Invalid API call result. Object expected.')
   }
-  if (!result.success) {
-    throw new Error(`API call failed with message: ${result.msg}.`)
+  if (!apiResult.success) {
+    throw new Error(`API call failed with message: ${getMessageFromResponse(result)}.`)
   }
-  return result
+  return apiResult
+}
+
+export function getMessageFromResponse(response) {
+  return response.data ? response.data.msg ?? '' : ''
 }

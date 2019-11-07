@@ -20,9 +20,7 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-meta-tags": "^0.7.4",
-    "react-redux": "^6.0.1",
     "react-swipeable-views": "^0.13.3",
-    "redux": "^3.7.2",
     "redux-observers": "^2.0.2",
     "smoothscroll-polyfill": "^0.4.3"
   },
@@ -116,10 +114,6 @@
         "error",
         "always-multiline"
       ],
-      "eol-last": [
-        "error",
-        "never"
-      ],
       "jsx-quotes": [
         "error",
         "prefer-double"
@@ -127,7 +121,8 @@
       "space-before-function-paren": [
         "error",
         "never"
-      ]
+      ],
+      "react/jsx-tag-spacing": "allow"
     }
   }
 }

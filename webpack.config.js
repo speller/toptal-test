@@ -32,15 +32,19 @@ module.exports = (env, argv) => {
       port: 8084,
       host: '0.0.0.0',
       publicPath: '/static/dist',
-      // publicPath: 'http://localhost:81',
       historyApiFallback: true,
-      // proxy: {
-      //   '/': 'http://localhost:81',
-      // },
-      // contentBase: path.resolve(__dirname, 'public/static/dist'),
       contentBase: __dirname,
       watchContentBase: true,
       disableHostCheck: true,
+      watchOptions: {
+        ignored: [
+          path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'var'),
+          path.resolve(__dirname, 'vendor'),
+          path.resolve(__dirname, '.git'),
+          path.resolve(__dirname, '.idea'),
+        ],
+      },
     },
     entry: entries,
     module: {

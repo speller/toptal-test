@@ -12,8 +12,7 @@ import CardActionArea from '@material-ui/core/CardActionArea'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
-import { apiCallPost } from '../../api'
-import isObject from 'lodash-es/isObject'
+import { apiCallPost, getMessageFromResponse, validateApiResult } from '../../api'
 import SignInDialog from '../SignInDialog'
 
 /**
@@ -30,13 +29,10 @@ function Root(props) {
     login: null,
     tasks: [],
     signInDlgOpen: false,
+    dialogInProgress: false,
   })
-  const setState = (key, value) => {
-    if (isObject(key)) {
-      _setState({...state, ...key})
-    } else {
-      _setState({...state, [key]: value})
-    }
+  const setState = (props) => {
+    _setState({...state, ...props})
   }
 
   const handleSignInDlgClose = () => {
@@ -55,24 +51,53 @@ function Root(props) {
     })
   }
 
-  const doSignIn = (login, password) => {
-    apiCallPost(
-      '/signin',
-      {
-        login,
-        password,
-      },
-    )
+  const doSignIn = async(login, password) => {
+    try {
+      setState({dialogInProgress: true})
+      const result = await apiCallPost(
+        '/signin',
+        {
+          login,
+          password,
+        },
+      )
+      const {data, accessToken} = validateApiResult(result)
+      setState({
+        accessToken,
+        login: data.login,
+        isLoggedIn: true,
+        signInDlgOpen: false,
+        dialogInProgress: false,
+      })
+    } catch (e) {
+      alert(e.response ? getMessageFromResponse(e.response) : (e.message ? e.message : e))
+      setState({dialogInProgress: false})
+    }
   }
 
-  const doSignUp = (login, password, role) => {
-    apiCallPost(
-      '/signup',
-      {
-        login,
-        password,
-      },
-    )
+  const doSignUp = async(login, password, role) => {
+    try {
+      setState({dialogInProgress: true})
+      const result = await apiCallPost(
+        '/signup',
+        {
+          login,
+          password,
+          role,
+        },
+      )
+      const {data, accessToken} = validateApiResult(result)
+      setState({
+        accessToken,
+        login: data.login,
+        isLoggedIn: true,
+        signInDlgOpen: false,
+        dialogInProgress: false,
+      })
+    } catch (e) {
+      alert(e.response ? getMessageFromResponse(e.response) : (e.message ? e.message : e))
+      setState({dialogInProgress: false})
+    }
   }
 
   const renderTask = task => {
@@ -97,7 +122,7 @@ function Root(props) {
           </Button>
         </CardActions>
       </Card>
-    );
+    )
   }
 
   return (
@@ -122,10 +147,10 @@ function Root(props) {
           {state.isLoggedIn &&
           <React.Fragment>
             <Typography variant="body1" color="inherit" noWrap className={classes.signedInTitle}>
-              You're logged in as
+              You're logged in as {state.login}
             </Typography>
             <IconButton color="inherit" title="Sign Out" onClick={handleSignOutClick}>
-              <FontAwesomeIcon icon="sign-out"/>
+              <FontAwesomeIcon icon="sign-out-alt"/>
             </IconButton>
           </React.Fragment>}
         </Toolbar>
@@ -157,6 +182,7 @@ function Root(props) {
             onClose={handleSignInDlgClose}
             onSignIn={doSignIn}
             onSignUp={doSignUp}
+            inProgress={state.dialogInProgress}
           />
         </React.Fragment>}
 

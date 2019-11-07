@@ -54,6 +54,12 @@ class AuthController
         $data = InputParamUtils::parseJsonRequest($request);
         $login = Commons::valueO($data, 'login');
         $password = Commons::valueO($data, 'password');
+        if (!$login) {
+            return JsonData::error("Login must not be empty");
+        }
+        if (!$password) {
+            return JsonData::error("Password must not be empty");
+        }
         $user =
             $this->userProvider->findUserByLoginAndPasswordHash(
                 $login,
@@ -81,6 +87,12 @@ class AuthController
         $data = InputParamUtils::parseJsonRequest($request);
         $login = Commons::valueO($data, 'login');
         $password = Commons::valueO($data, 'password');
+        if (!$login) {
+            return JsonData::error("Login must not be empty");
+        }
+        if (!$password) {
+            return JsonData::error("Password must not be empty");
+        }
         $role = Commons::valueOInt($data, 'role');
         $user = User::build()
             ->setLogin($login)

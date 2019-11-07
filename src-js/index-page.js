@@ -2,8 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles'
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme'
-import Provider from 'react-redux/es/components/Provider'
-import { combineReducers, createStore } from 'redux'
 import Root from './components/Root'
 // import rootReducers from './components/Root/reducers'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -79,32 +77,16 @@ const theme = createMuiTheme({
   },
 })
 
-function IndexPage(store) {
+function IndexPage() {
   return (
-    <Provider store={store}>
-      <MuiThemeProvider theme={theme}>
-        <Root />
-      </MuiThemeProvider>
-    </Provider>
+    <MuiThemeProvider theme={theme}>
+      <Root />
+    </MuiThemeProvider>
   )
 }
 
-// Initialize reducers and sagas for the app
-const reducers = {
-  // root: rootReducers,
-  // loginForm: loginFormReducers,
-  // mainPage: chatFormReducers,
-  // message: messageReducers,
-}
-
-// Create Redux store with all the enhancements
-const store = createStore(
-  Object.keys(reducers).length ? combineReducers(reducers) : state => ({...state}),
-  {}
-)
-
 // Render the whole application
 ReactDOM.render(
-  IndexPage(store),
+  IndexPage(),
   document.getElementById('root')
 )

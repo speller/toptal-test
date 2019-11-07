@@ -139,7 +139,7 @@ class MySqlProviderHelper extends MySqlHelper
      * @return mixed|null
      * @throws \Exception
      */
-    public function findBy(string $field, $value = null, $orderBy = null, $conditionOp = 'AND')
+    public function findBy($field, $value = null, $orderBy = null, $conditionOp = 'AND')
     {
         return $this->findBy2($this->tableName, $field, $value, $orderBy, $conditionOp);
     }
