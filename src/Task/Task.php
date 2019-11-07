@@ -4,7 +4,7 @@ namespace App\Task;
 /**
  * Model of a task that a user worker on
  */
-class Task
+class Task implements \JsonSerializable
 {
     /**
      * @var int
@@ -96,5 +96,15 @@ class Task
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        $vars = get_object_vars($this);
+        $vars['date'] = $this->date->format('Y-m-d');
+        return $vars;
     }
 }

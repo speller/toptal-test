@@ -85,7 +85,8 @@ export default makeStyles(theme => ({
     overflowX: 'hidden',
     overflowY: 'scroll',
     margin: '0 auto 0 auto',
-    padding: `${theme.spacing(3)} ${theme.spacing(1)} ${theme.spacing(1)}`,
+    padding: theme.spacing(1),
+    paddingTop: theme.spacing(3),
     maxWidth: '600px',
     width: '100%',
     [theme.breakpoints.up('sm')]: {
@@ -94,15 +95,36 @@ export default makeStyles(theme => ({
     [theme.breakpoints.up('md')]: {
       width: '50%',
     },
+    position: 'relative',
+    flexGrow: 1000,
+  },
+
+  taskProgress: {
+    position: 'absolute',
+    margin: '-20px -20px 0 0',
+    left: '50%',
+    top: '50%',
+    width: '40px',
+    height: '40px',
   },
 
   taskCard: {
     margin: '0 auto 0 auto',
+    marginBottom: theme.spacing(2),
   },
 
-  fabFilters: {
+  fabAddTask: {
     position: 'absolute',
+    zIndex: 100,
     bottom: theme.spacing(2),
     right: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      bottom: theme.spacing(3.5),
+      right: theme.spacing(3.5),
+    },
+    [theme.breakpoints.up('md')]: {
+      bottom: theme.spacing(5),
+      right: theme.spacing(5),
+    },
   },
 }))

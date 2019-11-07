@@ -107,8 +107,8 @@ class SqlTaskProvider extends MySqlProviderHelper implements TaskProviderInterfa
         } else {
             return $this->fetchBy(
                 [
-                    'date_begin >=' => $dateBegin,
-                    'date_last <=' => $dateLast,
+                    'date >=' => $dateBegin,
+                    'date <=' => $dateLast,
                     'user_id' => $userId,
                 ]
             );

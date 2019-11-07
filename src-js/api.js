@@ -3,7 +3,7 @@ import isObject from 'lodash-es/isObject'
 
 const API_BASE_URL = 'http://localhost:8000'
 
-export const apiCall = async (httpMethod, actionUrl, payload, accessToken) => {
+export const apiCall = async(httpMethod, actionUrl, payload, accessToken) => {
   let headers = {
   }
   if (accessToken) {

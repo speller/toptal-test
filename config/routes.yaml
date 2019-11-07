@@ -22,7 +22,7 @@ task_update:
   methods: [POST]
   controller: task_controller:updateTask
 
-task_dlete:
+task_delete:
   path: /task-delete
   methods: [POST]
   controller: task_controller:deleteTask

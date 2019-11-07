@@ -207,21 +207,23 @@ class MySqlProviderHelper extends MySqlHelper
         $where = [];
         $rawValues = [];
         foreach ($fieldValues as $name => $value) {
+            $vname = $name;
             if (!is_array($value)) {
                 if (preg_match('/^(\w+)\s*([><=]{1,2}|\sLIKE)$/', $name, $matches)) {
                     $comparison = $matches[2];
+                    $vname = str_replace([' ', '=', '<', '>'], ['_', 'e', 'l', 'g'], $name);
                     $name = trim($matches[1]);
                 } else {
                     $comparison = '=';
                 }
                 $where[] =
                     ($value !== null || !$useIsNull) ?
-                        "{$c}{$name}{$c} $comparison :{$prefix}{$name}" :
+                        "{$c}{$name}{$c} $comparison :{$prefix}{$vname}" :
                         "{$c}{$name}{$c} IS NULL";
             } else {
-                $where[] = "{$c}{$name}{$c} IN :{$prefix}{$name}";
+                $where[] = "{$c}{$name}{$c} IN :{$prefix}{$vname}";
             }
-            $rawValues[$prefix . $name] = $value;
+            $rawValues[$prefix . $vname] = $value;
         }
         return [
             $where ? implode(' ' . $separator . ' ', $where) : '',

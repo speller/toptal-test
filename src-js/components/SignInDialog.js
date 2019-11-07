@@ -74,6 +74,18 @@ function SignInDialog(props) {
     }
   }
 
+  const validateLogin = (value) => {
+    return validateField('login', value, notEmptyValidator)
+  }
+
+  const validatePasswordIn = (value) => {
+    return validateField('passwordIn', value, notEmptyValidator)
+  }
+
+  const validatePasswordUp = (value) => {
+    return validateField('passwordUp', value, notEmptyValidator)
+  }
+
   const handleChangeTabIndex = (event, newValue) => {
     if (newValue === 0) {
       setState({tabIndex: newValue, passwordUp: '', passwordUpError: '', login: '', loginError: ''})
@@ -87,15 +99,15 @@ function SignInDialog(props) {
   }
 
   const handleChangeLogin = event => {
-    setState(validateField('login', event.target.value, notEmptyValidator).state)
+    setState(validateLogin(event.target.value).state)
   }
 
   const handleChangePasswordIn = event => {
-    setState(validateField('passwordIn', event.target.value, notEmptyValidator).state)
+    setState(validatePasswordIn(event.target.value).state)
   }
 
   const handleChangePasswordUp = event => {
-    setState(validateField('passwordUp', event.target.value, notEmptyValidator).state)
+    setState(validatePasswordUp(event.target.value).state)
   }
 
   const handleChangeRole = event => {
@@ -137,15 +149,15 @@ function SignInDialog(props) {
 
   const validateAllFields = () => {
     let result = true, resultState = {}, fieldResult
-    fieldResult = validateField('login', state.login, notEmptyValidator)
+    fieldResult = validateLogin(state.login)
     result = result && !fieldResult.valid
     resultState = {...resultState, ...fieldResult.state}
     if (state.tabIndex === 0) {
-      fieldResult = validateField('passwordIn', state.passwordIn, notEmptyValidator)
+      fieldResult = validatePasswordIn(state.passwordIn)
       result = result && !fieldResult.valid
       resultState = {...resultState, ...fieldResult.state}
     } else {
-      fieldResult = validateField('passwordUp', state.passwordUp, notEmptyValidator)
+      fieldResult = validatePasswordUp(state.passwordUp)
       result = result && !fieldResult.valid
       resultState = {...resultState, ...fieldResult.state}
     }

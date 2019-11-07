@@ -59,6 +59,16 @@ class TaskController implements RequireAuthenticationInterface
         $duration = Commons::valueO($data, 'duration');
         $date = Commons::valueO($data, 'date');
         $title = Commons::valueO($data, 'title');
+        if (!$title) {
+            return JsonData::error("Title must not be empty");
+        }
+        if (!$date) {
+            return JsonData::error("Date must not be empty");
+        }
+        if ($duration <= 0) {
+            return JsonData::error("Duration must be a positive number");
+        }
+
         $id = $this->taskProvider->addTask(
             Task::build()
                 ->setUserId($this->currentUserId)
@@ -78,9 +88,8 @@ class TaskController implements RequireAuthenticationInterface
      */
     public function listTasks(Request $request)
     {
-        $data = InputParamUtils::parseJsonRequest($request);
-        $dateBegin = Commons::valueO($data, 'dateBegin');
-        $dateEnd = Commons::valueO($data, 'dateEnd');
+        $dateBegin = $request->get('dateBegin');
+        $dateLast = $request->get('dateLast');
         switch ($this->currentRole) {
             case UserRole::USER: $addRoles = []; break;
             case UserRole::MANAGER: $addRoles = [UserRole::USER]; break;
@@ -90,8 +99,8 @@ class TaskController implements RequireAuthenticationInterface
         }
         $tasks =
             $this->taskProvider->searchTasks(
-                $dateBegin,
-                $dateEnd,
+                \DateTime::createFromFormat('Y-m-d', $dateBegin),
+                \DateTime::createFromFormat('Y-m-d', $dateLast),
                 $this->currentUserId,
                 $addRoles
             );
