@@ -101,7 +101,11 @@ class AuthController
             ->setPasswordHash($this->passwordService->getDbPassword($password))
             ->create();
         $userId = $this->userProvider->registerNewUser($user);
-        $user = $this->userProvider->findUserById($userId);
+        $user =
+            User::build()
+                ->assignFrom($user)
+                ->setId($userId)
+                ->create();
         return
             $this->authService->sendAccessToken(
                 new JsonResponse(JsonData::data($user)),

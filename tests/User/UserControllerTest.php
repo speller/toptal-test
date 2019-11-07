@@ -25,6 +25,16 @@ class UserControllerTest extends UnitTestCase
             );
     }
 
+    /**
+     * Creates Request object with specific content
+     * @param $content
+     * @return Request
+     */
+    private function getRequest($content)
+    {
+        return new Request([], [], [], [], [], [], json_encode($content));
+    }
+
     public function testListUsersFailIfUnknownRole()
     {
         $this->controller->setCurrentUserContext(1, 500);
@@ -123,9 +133,9 @@ class UserControllerTest extends UnitTestCase
     public function testUpdateUserFailOnZeroHours()
     {
         $this->controller->setCurrentUserContext(1, UserRole::USER);
-        $request = new Request([], [], [], [], [], [], json_encode([
+        $request = $this->getRequest([
             'workingHoursPerDay' => 0,
-        ]));
+        ]);
         $this->userProvider
             ->expects($this->never())
             ->method('updateUser');
@@ -138,9 +148,9 @@ class UserControllerTest extends UnitTestCase
     public function testUpdateUserFailOnNegativeHours()
     {
         $this->controller->setCurrentUserContext(1, UserRole::USER);
-        $request = new Request([], [], [], [], [], [], json_encode([
+        $request = $this->getRequest([
             'workingHoursPerDay' => -1,
-        ]));
+        ]);
         $this->userProvider
             ->expects($this->never())
             ->method('updateUser');
@@ -153,9 +163,9 @@ class UserControllerTest extends UnitTestCase
     public function testUpdateUserFailIfUserNotFound()
     {
         $this->controller->setCurrentUserContext(1, UserRole::USER);
-        $request = new Request([], [], [], [], [], [], json_encode([
+        $request = $this->getRequest([
             'workingHoursPerDay' => 1,
-        ]));
+        ]);
         $this->userProvider
             ->expects($this->once())
             ->method('findUserById')
@@ -173,9 +183,9 @@ class UserControllerTest extends UnitTestCase
     public function testUpdateUserOk()
     {
         $this->controller->setCurrentUserContext(1, UserRole::USER);
-        $request = new Request([], [], [], [], [], [], json_encode([
+        $request = $this->getRequest([
             'workingHoursPerDay' => 2,
-        ]));
+        ]);
         $this->userProvider
             ->expects($this->once())
             ->method('findUserById')
