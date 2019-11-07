@@ -32,7 +32,6 @@ function Filter(props) {
     dateFrom,
     dateTo,
   })
-  console.log('filter hours', hoursPerDay, state.hoursPerDay)
   const setState = (props) => {
     _setState({ ...state, ...props })
   }

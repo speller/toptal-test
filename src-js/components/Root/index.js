@@ -26,6 +26,7 @@ import TaskDialog from '../TaskDialog'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
 import Filter from '../Filter'
+import ExportDialog from '../ExportDialog'
 
 const dateFormat = 'YYYY-MM-DD'
 
@@ -95,6 +96,7 @@ function Root(props) {
     }),
     hoursPerDay: 0,
   })
+  const [exportDlgOpen, setExportDlgOpen] = useState(false)
 
   const setAuthState = (props) => {
     _setAuthState({...authState, ...props})
@@ -144,7 +146,6 @@ function Root(props) {
   }, [filterState.dateFrom, filterState.dateTo])
 
   useEffect(() => {
-    console.log('effect')
     handleUpdateWorkingHours()
   }, [filterState.hoursPerDay])
 
@@ -248,6 +249,7 @@ function Root(props) {
         newTasks.push({
           ...taskState.dialogTask,
           id: newId,
+          userId: authState.id,
           title,
           date,
           duration,
@@ -314,7 +316,6 @@ function Root(props) {
     if (!authState.isLoggedIn || authState.users.length === 0 || filterState.hoursPerDay === 0) {
       return
     }
-    console.log('update hours', filterState.hoursPerDay)
     await apiUpdateUser(authState.id, filterState.hoursPerDay, authState.accessToken)
     handleUpdateUsers()
   }
@@ -331,7 +332,14 @@ function Root(props) {
     }
   }
 
-  console.log('hours', filterState.hoursPerDay)
+  const handleExport = () => {
+    setExportDlgOpen(true)
+  }
+
+  const handleExportClose = () => {
+    setExportDlgOpen(false)
+  }
+
   const renderTasksContext = {
     sumHoursPerDay: {},
     lastGroup: '',
@@ -431,8 +439,21 @@ function Root(props) {
         className={classes.fabAddTask}
         onClick={handleAddTask}
         disabled={!authState.isLoggedIn || taskState.inProgress || taskState.taskDlgOpen}
+        title="Add task"
       >
         <FontAwesomeIcon icon="plus"/>
+      </Fab>}
+
+      {authState.isLoggedIn &&
+      <Fab
+        size="small"
+        color="secondary"
+        className={classes.fabExport}
+        onClick={handleExport}
+        disabled={!authState.isLoggedIn || taskState.inProgress || taskState.taskDlgOpen}
+        title="Export"
+      >
+        <FontAwesomeIcon icon="file-export"/>
       </Fab>}
 
       <div className={classes.root}>
@@ -481,6 +502,12 @@ function Root(props) {
             inProgress={taskState.inProgress}
             onClose={handleTaskDlgClose}
             onSubmit={handleTaskDlgSubmit}
+          />}
+          {exportDlgOpen &&
+          <ExportDialog
+            open
+            tasks={taskState.tasks}
+            onClose={handleExportClose}
           />}
         </React.Fragment>}
       </div>

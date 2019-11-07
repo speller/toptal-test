@@ -127,4 +127,19 @@ export default makeStyles(theme => ({
       right: theme.spacing(5),
     },
   },
+
+  fabExport: {
+    position: 'absolute',
+    zIndex: 100,
+    bottom: theme.spacing(12),
+    right: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      bottom: theme.spacing(13.5),
+      right: theme.spacing(3.5),
+    },
+    [theme.breakpoints.up('md')]: {
+      bottom: theme.spacing(15),
+      right: theme.spacing(5),
+    },
+  },
 }))

@@ -11,7 +11,6 @@ function alertError(e) {
 
 export async function apiSignIn(login, password) {
   try {
-    setState({ dialogInProgress: true })
     const result = await apiCallPost(
       '/signin',
       {
@@ -43,7 +42,7 @@ export async function apiSignUp(login, password, role) {
   }
 }
 
-export async function apiLoadTasks(dateBegin, dateLast, accessToken, setState) {
+export async function apiLoadTasks(dateBegin, dateLast, accessToken) {
   try {
     const result = await apiCallGet(
       '/task-list',

@@ -52,10 +52,14 @@ class UserController implements RequireAuthenticationInterface
             default:
                 throw new \RuntimeException('Unknown role');
         }
+        $currentUser = $this->userProvider->findUserById($this->currentUserId);
         if ($addRoles) {
             $result = $this->userProvider->getUsersByRoles($addRoles);
+            if ($this->currentRole === UserRole::MANAGER) {
+                $result[] = $currentUser;
+            }
         } else {
-            $result = [$this->userProvider->findUserById($this->currentUserId)];
+            $result = [$currentUser];
         }
         return JsonData::data($result);
     }

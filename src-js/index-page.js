@@ -3,43 +3,20 @@ import ReactDOM from 'react-dom'
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles'
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme'
 import Root from './components/Root'
-// import rootReducers from './components/Root/reducers'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane'
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle'
-import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
-import { faComment } from '@fortawesome/free-solid-svg-icons/faComment'
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope'
-import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons/faUserCircle'
-import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons/faEllipsisV'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { faStar } from '@fortawesome/free-solid-svg-icons/faStar'
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons/faSignInAlt'
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt'
-import { faListUl } from '@fortawesome/free-solid-svg-icons/faListUl'
 import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter'
+import { faFileExport } from '@fortawesome/free-solid-svg-icons/faFileExport'
 import customTheme from './components/common/custom-theme'
 
 library.add(
-  faLock,
-  faPaperPlane,
-  faTimesCircle,
-  faBars,
-  faComment,
-  faEnvelope,
-  faBell,
-  faUserCircle,
-  faSearch,
-  faEllipsisV,
   faPlus,
-  faStar,
   faSignInAlt,
   faSignOutAlt,
-  faListUl,
   faFilter,
+  faFileExport,
 )
 
 
@@ -49,15 +26,6 @@ const theme = createMuiTheme({
     primary: {
       main: customTheme.mainColor,
     },
-    // secondary: pink,
-    // error: red,
-    // Used by `getContrastText()` to maximize the contrast between the background and
-    // the text.
-    // contrastThreshold: 3,
-    // Used to shift a color's luminance by approximately
-    // two indexes within its tonal palette.
-    // E.g., shift from Red 500 to Red 300 or Red 700.
-    // tonalOffset: 0.2,
   },
   typography: {
     useNextVariants: true,
