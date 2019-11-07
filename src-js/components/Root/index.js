@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import useStyles from './styles'
 import Fab from '@material-ui/core/Fab'
 import Card from '@material-ui/core/Card'
-import CardActionArea from '@material-ui/core/CardActionArea'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
@@ -24,6 +23,9 @@ import {
 import TaskDialog from '../TaskDialog'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
+import TextField from '@material-ui/core/TextField'
+import Icon from '@material-ui/core/Icon'
+import Filter from '../Filter'
 
 const dateFormat = 'YYYY-MM-DD'
 
@@ -34,6 +36,15 @@ function getAuthStorageData(def) {
 
 function setAuthStorageData(data) {
   window.localStorage.auth = JSON.stringify(data)
+}
+
+function getFilterStorageData(def) {
+  const filter = window.localStorage.filter
+  return { ...def, ...(filter ? JSON.parse(filter) : {}) }
+}
+
+function setFilterStorageData(data) {
+  window.localStorage.filter = JSON.stringify(data)
 }
 
 function getDefaultTaskState() {
@@ -63,15 +74,21 @@ function Root(props) {
     signInDlgOpen: false,
     dialogInProgress: false,
   })
-
   const [taskState, _setTaskState] = useState(getDefaultTaskState())
+  const [filterState, _setFilterState] = useState(getFilterStorageData({
+    hoursPerDay: 8,
+    dateFrom: moment().subtract(1, 'years').format(dateFormat),
+    dateTo: moment().format(dateFormat),
+  }))
 
   const setAuthState = (props) => {
     _setAuthState({...authState, ...props})
   }
-
   const setTaskState = (props) => {
     _setTaskState({...taskState, ...props})
+  }
+  const setFilterState = (props) => {
+    _setFilterState({...filterState, ...props})
   }
 
   const handleSignInDlgClose = () => {
@@ -102,6 +119,14 @@ function Root(props) {
     })
   }, [authState.isLoggedIn])
 
+  useEffect(() => {
+    handleLoadTasks()
+  }, [filterState.dateFrom, filterState.dateTo])
+
+  useEffect(() => {
+    setFilterStorageData(filterState)
+  }, [filterState.dateFrom, filterState.dateTo, filterState.hoursPerDay])
+
   const handleSignIn = (login, password) => {
     apiSignIn(login, password, setAuthState)
   }
@@ -114,7 +139,7 @@ function Root(props) {
     if (!authState.isLoggedIn) {
       return
     }
-    apiLoadTasks('1900-01-01', '9999-12-31', authState.accessToken, setTaskState)
+    apiLoadTasks(filterState.dateFrom, filterState.dateTo, authState.accessToken, setTaskState)
   }
 
   const handleTaskDlgClose = () => {
@@ -214,6 +239,14 @@ function Root(props) {
     }
   }
 
+  const handleFilter = async(hoursPerDay, dateFrom, dateTo) => {
+    setFilterState({
+      hoursPerDay,
+      dateFrom,
+      dateTo,
+    })
+  }
+
   const renderTask = task => {
     return (
       <Card key={task.id} className={classes.taskCard}>
@@ -266,6 +299,13 @@ function Root(props) {
             </IconButton>
           </React.Fragment>}
         </Toolbar>
+        <Filter
+          hoursPerDay={filterState.hoursPerDay}
+          dateFrom={filterState.dateFrom}
+          dateTo={filterState.dateTo}
+          disabled={taskState.inProgress}
+          onFilter={handleFilter}
+        />
       </AppBar>
 
       {authState.isLoggedIn &&

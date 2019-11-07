@@ -64,9 +64,9 @@ export default makeStyles(theme => ({
   },
 
   contentPadding: {
-    minHeight: '56px',
+    minHeight: '106px',
     [theme.breakpoints.up('sm')]: {
-      minHeight: '64px',
+      minHeight: '114px',
     },
   },
 
