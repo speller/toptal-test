@@ -49,11 +49,11 @@ function Filter(props) {
   }
 
   const handleChangeDateFrom = event => {
-    setState({ dateFrom: event.target.value })
+    setState({ dateFrom: event.format('YYYY-MM-DD') })
   }
 
   const handleChangeDateTo = event => {
-    setState({ dateTo: event.target.value })
+    setState({ dateTo: event.format('YYYY-MM-DD') })
   }
 
   const handleFilter = event => {

@@ -9,6 +9,12 @@ import makeStyles from '@material-ui/core/styles/makeStyles'
 import TextField from '@material-ui/core/TextField'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import MomentUtils from '@date-io/moment'
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers'
+
 
 const useStyles = theme => ({
   actions: {
@@ -67,7 +73,7 @@ function TaskDialog(props) {
   }
 
   const handleChangeDate = event => {
-    setState(validateDate(event.target.value).state)
+    setState(validateDate(event.format('YYYY-MM-DD')).state)
   }
 
   const handleSubmit = event => {
@@ -115,65 +121,75 @@ function TaskDialog(props) {
       aria-labelledby="form-dialog-title"
     >
       <form onSubmit={event => handleFormSubmit(event)}>
-        <DialogTitle id="form-dialog-title">
-          {id ? `Edit Task # ${id}` : 'Create New Task'}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Date"
-            margin="normal"
-            fullWidth
-            onChange={handleChangeDate}
-            value={state.date}
-            disabled={inProgress}
-            error={notEmpty(state.dateError)}
-            helperText={state.dateError}
-          />
-          <TextField
-            autoFocus
-            label="Title"
-            margin="normal"
-            fullWidth
-            onChange={handleChangeTitle}
-            value={state.title}
-            disabled={inProgress}
-            error={notEmpty(state.titleError)}
-            helperText={state.titleError}
-          />
-          <TextField
-            label="Duration"
-            margin="normal"
-            fullWidth
-            onChange={handleChangeDuration}
-            value={state.duration}
-            disabled={inProgress}
-            error={notEmpty(state.durationError)}
-            helperText={state.durationError}
-          />
-        </DialogContent>
-        <DialogActions className={classes.actions}>
-          <Button
-            onClick={onClose}
-            variant="contained"
-            color="default"
-            className={classes.cancelButton}
-            disabled={inProgress}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            color="primary"
-            autoFocus
-            type="submit"
-            disabled={inProgress}
-          >
-            {id ? 'Update Task' : 'Create Task'}
-          </Button>
-        </DialogActions>
-        {inProgress &&
-        <LinearProgress color="primary"/>}
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+          <DialogTitle id="form-dialog-title">
+            {id ? `Edit Task # ${id}` : 'Create New Task'}
+          </DialogTitle>
+          <DialogContent>
+            <KeyboardDatePicker
+              className={classes.filterInput}
+              disableToolbar
+              variant="inline"
+              format="YYYY-MM-DD"
+              id="date-picker-inline"
+              fullWidth
+              label="Date"
+              margin="normal"
+              onChange={handleChangeDate}
+              value={state.date}
+              disabled={inProgress}
+              error={notEmpty(state.dateError)}
+              helperText={state.dateError}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+            <TextField
+              autoFocus
+              label="Title"
+              margin="normal"
+              fullWidth
+              onChange={handleChangeTitle}
+              value={state.title}
+              disabled={inProgress}
+              error={notEmpty(state.titleError)}
+              helperText={state.titleError}
+            />
+            <TextField
+              label="Duration"
+              margin="normal"
+              fullWidth
+              onChange={handleChangeDuration}
+              value={state.duration}
+              disabled={inProgress}
+              error={notEmpty(state.durationError)}
+              helperText={state.durationError}
+            />
+          </DialogContent>
+          <DialogActions className={classes.actions}>
+            <Button
+              onClick={onClose}
+              variant="contained"
+              color="default"
+              className={classes.cancelButton}
+              disabled={inProgress}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              color="primary"
+              autoFocus
+              type="submit"
+              disabled={inProgress}
+            >
+              {id ? 'Update Task' : 'Create Task'}
+            </Button>
+          </DialogActions>
+          {inProgress &&
+          <LinearProgress color="primary"/>}
+        </MuiPickersUtilsProvider>
       </form>
     </Dialog>
   )
