@@ -116,7 +116,7 @@ function TaskDialog(props) {
     >
       <form onSubmit={event => handleFormSubmit(event)}>
         <DialogTitle id="form-dialog-title">
-          {id ? 'Update Task' : 'Create Task'}
+          {id ? `Edit Task # ${id}` : 'Create New Task'}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -148,7 +148,7 @@ function TaskDialog(props) {
             value={state.duration}
             disabled={inProgress}
             error={notEmpty(state.durationError)}
-            helperText={state.duration}
+            helperText={state.durationError}
           />
         </DialogContent>
         <DialogActions className={classes.actions}>

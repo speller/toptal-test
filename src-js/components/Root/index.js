@@ -13,7 +13,14 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import SignInDialog from '../SignInDialog'
-import { apiCreateTask, apiDeleteTask, apiLoadTasks, apiSignIn, apiSignUp, } from './api'
+import {
+  apiCreateTask,
+  apiDeleteTask,
+  apiLoadTasks,
+  apiSignIn,
+  apiSignUp,
+  apiUpdateTask,
+} from './api'
 import TaskDialog from '../TaskDialog'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
@@ -117,6 +124,33 @@ function Root(props) {
   const handleTaskDlgSubmit = async(id, title, date, duration) => {
     setTaskState({ inProgress: true })
     if (id) {
+      const result = await apiUpdateTask(
+        {
+          id,
+          title,
+          date,
+          duration,
+        },
+        authState.accessToken,
+      )
+      if (result) {
+        const newTasks = [...taskState.tasks]
+        const i = newTasks.findIndex(task => task.id === id)
+        newTasks[i] = {
+          ...newTasks[i],
+          title,
+          date,
+          duration,
+        }
+        setTaskState({
+          tasks: newTasks,
+          inProgress: false,
+          taskDlgOpen: false,
+          dialogTask: {},
+        })
+      } else {
+        setTaskState({ inProgress: false })
+      }
 
     } else {
       const newId = await apiCreateTask(
@@ -154,6 +188,14 @@ function Root(props) {
     })
   }
 
+  const handleEditTask = id => {
+    const task = taskState.tasks.find(task => task.id === id)
+    setTaskState({
+      taskDlgOpen: true,
+      dialogTask: {...task},
+    })
+  }
+
   const handleDeleteTask = async(id) => {
     if (!id) {
       return
@@ -175,18 +217,16 @@ function Root(props) {
   const renderTask = task => {
     return (
       <Card key={task.id} className={classes.taskCard}>
-        <CardActionArea>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              #{task.id} {task.title}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              Duration: {task.duration} h.
-            </Typography>
-          </CardContent>
-        </CardActionArea>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            #{task.id} {task.title}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Date: {task.date}, Duration: {task.duration} h.
+          </Typography>
+        </CardContent>
         <CardActions>
-          <Button size="small" color="primary">
+          <Button size="small" color="primary" onClick={() => handleEditTask(task.id)}>
             Edit
           </Button>
           <Button size="small" color="primary" onClick={() => handleDeleteTask(task.id)}>

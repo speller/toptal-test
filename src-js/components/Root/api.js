@@ -1,4 +1,9 @@
-import { apiCallGet, apiCallPost, getMessageFromResponse, validateApiResult, } from '../../api'
+import {
+  apiCallGet,
+  apiCallPost,
+  getMessageFromResponse,
+  validateApiResult,
+} from '../../api'
 
 function alertError(e) {
   alert(e.response ? getMessageFromResponse(e.response) : (e.message ? e.message : e))
@@ -91,6 +96,21 @@ export async function apiCreateTask(taskData, accessToken) {
   } catch (e) {
     alertError(e)
     return null
+  }
+}
+
+export async function apiUpdateTask(taskData, accessToken) {
+  try {
+    const result = await apiCallPost(
+      '/task-update',
+      taskData,
+      accessToken
+    )
+    validateApiResult(result)
+    return true
+  } catch (e) {
+    alertError(e)
+    return false
   }
 }
 

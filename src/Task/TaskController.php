@@ -124,6 +124,7 @@ class TaskController implements RequireAuthenticationInterface
         }
         $this->taskProvider->updateTask(
             Task::build()
+                ->setId($id)
                 ->setTitle(Commons::valueO($data, 'title'))
                 ->setDuration(Commons::valueO($data, 'duration'))
                 ->setDate(Commons::valueO($data, 'date'))
