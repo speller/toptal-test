@@ -5,7 +5,7 @@ import createMuiTheme from '@material-ui/core/styles/createMuiTheme'
 import Provider from 'react-redux/es/components/Provider'
 import { combineReducers, createStore } from 'redux'
 import Root from './components/Root'
-import rootReducers from './components/Root/reducers'
+// import rootReducers from './components/Root/reducers'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane'
@@ -91,7 +91,7 @@ function IndexPage(store) {
 
 // Initialize reducers and sagas for the app
 const reducers = {
-  root: rootReducers,
+  // root: rootReducers,
   // loginForm: loginFormReducers,
   // mainPage: chatFormReducers,
   // message: messageReducers,

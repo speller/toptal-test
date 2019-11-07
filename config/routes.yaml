@@ -7,10 +7,10 @@ signin:
   methods: [POST]
   controller: auth_controller:signIn
 
-register:
-  path: /register
+signup:
+  path: /signup
   methods: [POST]
-  controller: auth_controller:register
+  controller: auth_controller:signUp
 
 task_add:
   path: /task-add

@@ -48,20 +48,12 @@ export default makeStyles(theme => ({
     flexGrow: 1,
   },
 
-  saleRentBtn: {
-    minHeight: '40px !important',
+  signInTitle: {
+    marginBottom: theme.spacing(1),
   },
 
-  saleRentTabs: {
-    minHeight: '40px !important',
-  },
-
-  saleRentSelectedBtn: {
-    backgroundColor: lighten(theme.customTheme.mainColor2, 0.5),
-    borderRadius: theme.spacing(0.5),
-  },
-
-  sectionDesktop: {
+  signedInTitle: {
+    paddingRight: theme.spacing(1),
   },
 
   root: {
@@ -78,42 +70,39 @@ export default makeStyles(theme => ({
     },
   },
 
-  mapAndList: {
-    flexGrow: 1,
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    overflow: 'hidden',
+  signInBlock: {
+    margin: 'auto',
+    width: '300px',
+    textAlign: 'center',
   },
 
-  propList: {
+  signInBtnIcon: {
+    marginLeft: theme.spacing(1),
+  },
+
+  taskList: {
     ...scrollBarStyles(theme),
     overflowX: 'hidden',
     overflowY: 'scroll',
-    // maxWidth: '400px',
-    width: '25%',
-    // [theme.breakpoints.up('sm')]: {
-    //   width: '20%',
-    // },
+    margin: '0 auto 0 auto',
+    padding: `${theme.spacing(3)} ${theme.spacing(1)} ${theme.spacing(1)}`,
+    maxWidth: '600px',
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '80%',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '50%',
+    },
   },
 
-  map: {
-    backgroundColor: 'beige',
-    flexGrow: 1,
+  taskCard: {
+    margin: '0 auto 0 auto',
   },
 
   fabFilters: {
     position: 'absolute',
     bottom: theme.spacing(2),
     right: theme.spacing(2),
-  },
-
-  fabFilterBadge: {
-    top: '-75%',
-    right: '-75%',
-    backgroundColor: theme.palette.background.default,
-    border: '1px solid',
-    borderColor: theme.palette.primary.main,
-    color: theme.palette.text.primary,
   },
 }))

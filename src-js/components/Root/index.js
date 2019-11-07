@@ -1,13 +1,20 @@
 import React, { useState } from 'react'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
-import Badge from '@material-ui/core/Badge'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import useStyles from './styles'
 import Fab from '@material-ui/core/Fab'
+import Card from '@material-ui/core/Card'
+import CardActionArea from '@material-ui/core/CardActionArea'
+import CardContent from '@material-ui/core/CardContent'
+import CardActions from '@material-ui/core/CardActions'
+import Button from '@material-ui/core/Button'
+import { apiCallPost } from '../../api'
+import isObject from 'lodash-es/isObject'
+import SignInDialog from '../SignInDialog'
 
 /**
  * Root page component
@@ -16,74 +23,146 @@ import Fab from '@material-ui/core/Fab'
  * @constructor
  */
 function Root(props) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [saleRent, setSaleRent] = useState(0)
   const classes = useStyles()
-  const isProfileMenuOpen = Boolean(anchorEl)
-
-  const handleProfileMenuOpen = event => {
-    setAnchorEl(event.currentTarget)
+  const [state, _setState] = useState({
+    isLoggedIn: false,
+    accessToken: null,
+    login: null,
+    tasks: [],
+    signInDlgOpen: false,
+  })
+  const setState = (key, value) => {
+    if (isObject(key)) {
+      _setState({...state, ...key})
+    } else {
+      _setState({...state, [key]: value})
+    }
   }
 
-  const handleProfileMenuClose = event => {
-    setAnchorEl(null)
+  const handleSignInDlgClose = () => {
+    setState({signInDlgOpen: false})
   }
 
-  function handleSaleRentSwitch(event, newValue) {
-    setSaleRent(newValue)
+  const handleSignInClick = async event => {
+    setState({signInDlgOpen: true})
+  }
+
+  const handleSignOutClick = async event => {
+    setState({
+      isLoggedIn: false,
+      accessToken: null,
+      login: null,
+    })
+  }
+
+  const doSignIn = (login, password) => {
+    apiCallPost(
+      '/signin',
+      {
+        login,
+        password,
+      },
+    )
+  }
+
+  const doSignUp = (login, password, role) => {
+    apiCallPost(
+      '/signup',
+      {
+        login,
+        password,
+      },
+    )
+  }
+
+  const renderTask = task => {
+    return (
+      <Card key={task.id} className={classes.taskCard}>
+        <CardActionArea>
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {task.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Duration: {task.duration} h.
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Button size="small" color="primary">
+            Edit
+          </Button>
+          <Button size="small" color="primary">
+            Delete
+          </Button>
+        </CardActions>
+      </Card>
+    );
   }
 
   return (
     <React.Fragment>
-      <CssBaseline />
+      <CssBaseline/>
       <AppBar position="absolute">
         <Toolbar className={classes.appToolBar}>
           <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-            Toptal<br />
+            Toptal<br/>
             <i>test project</i>
           </Typography>
 
-          <div className={classes.grow} />
+          <div className={classes.grow}/>
 
-          {!isLoggedIn && <div>
-            <IconButton color="inherit" title="Sign In or Sign Up">
-              <FontAwesomeIcon icon="sign-in-alt" />
+          {!state.isLoggedIn &&
+          <React.Fragment>
+            <IconButton color="inherit" title="Sign In or Sign Up" onClick={handleSignInClick}>
+              <FontAwesomeIcon icon="sign-in-alt"/>
             </IconButton>
-          </div>}
-          {isLoggedIn && <div>
-            <div>
-              <Typography variant="body1" color="inherit" noWrap>
-                You're logged in as
-              </Typography>
-            </div>
-            <IconButton color="inherit" title="Sign Out">
-              <FontAwesomeIcon icon="sign-out" />
+          </React.Fragment>}
+
+          {state.isLoggedIn &&
+          <React.Fragment>
+            <Typography variant="body1" color="inherit" noWrap className={classes.signedInTitle}>
+              You're logged in as
+            </Typography>
+            <IconButton color="inherit" title="Sign Out" onClick={handleSignOutClick}>
+              <FontAwesomeIcon icon="sign-out"/>
             </IconButton>
-          </div>}
+          </React.Fragment>}
         </Toolbar>
       </AppBar>
 
+      {state.isLoggedIn &&
       <Fab color="primary" className={classes.fabFilters}>
-        <Badge badgeContent={17} color="secondary" classes={{badge: classes.fabFilterBadge}}>
-          <FontAwesomeIcon icon="filter" />
-        </Badge>
-      </Fab>
+        <FontAwesomeIcon icon="plus"/>
+      </Fab>}
 
       <div className={classes.root}>
         <div className={classes.contentPadding}>
           padding
         </div>
 
-        <div className={classes.mapAndList}>
-          <div className={classes.propList}>
-            <div style={{height: '2000px', width: '200px', border: '1px solid black', backgroundColor: 'lightgray'}}>Block</div>
+        {!state.isLoggedIn &&
+        <React.Fragment>
+          <div className={classes.signInBlock}>
+            <Typography variant="body1" className={classes.signInTitle}>
+              You're not signed in.
+            </Typography>
+            <Button color="primary" variant="contained" onClick={handleSignInClick}>
+              Sign In or Sign Up
+              <FontAwesomeIcon icon="sign-in-alt" className={classes.signInBtnIcon}/>
+            </Button>
           </div>
-          <div className={classes.map}>
-            map
-          </div>
-        </div>
+          <SignInDialog
+            open={state.signInDlgOpen}
+            onClose={handleSignInDlgClose}
+            onSignIn={doSignIn}
+            onSignUp={doSignUp}
+          />
+        </React.Fragment>}
 
+        {state.isLoggedIn && <div className={classes.taskList}>
+          {state.tasks.map(task => renderTask(task))}
+        </div>}
       </div>
     </React.Fragment>
   )

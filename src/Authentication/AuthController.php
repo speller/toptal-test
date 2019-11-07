@@ -76,7 +76,7 @@ class AuthController
      * @return JsonData|JsonResponse
      * @throws \App\Exception\RequestFailException
      */
-    public function register(Request $request)
+    public function signUp(Request $request)
     {
         $data = InputParamUtils::parseJsonRequest($request);
         $login = Commons::valueO($data, 'login');
