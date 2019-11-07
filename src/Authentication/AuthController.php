@@ -97,6 +97,7 @@ class AuthController
         $user = User::build()
             ->setLogin($login)
             ->setRole($role)
+            ->setWorkingHoursPerDay(8)
             ->setPasswordHash($this->passwordService->getDbPassword($password))
             ->create();
         $userId = $this->userProvider->registerNewUser($user);

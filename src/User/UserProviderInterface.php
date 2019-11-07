@@ -27,4 +27,17 @@ interface UserProviderInterface
      * @return User|null
      */
     public function findUserById(int $id): ?User;
+
+    /**
+     * Returns list of users by roles
+     * @param int[] $roles
+     * @return array
+     */
+    public function getUsersByRoles(array $roles): array;
+
+    /**
+     * Updates user data
+     * @param User $user
+     */
+    public function updateUser(User $user): void;
 }

@@ -9,19 +9,7 @@ function alertError(e) {
   alert(e.response ? getMessageFromResponse(e.response) : (e.message ? e.message : e))
 }
 
-function authenticateState(result) {
-  const { data, accessToken } = result
-  return {
-    accessToken,
-    login: data.login,
-    id: data.id,
-    isLoggedIn: true,
-    signInDlgOpen: false,
-    dialogInProgress: false,
-  }
-}
-
-export async function apiSignIn(login, password, setState) {
+export async function apiSignIn(login, password) {
   try {
     setState({ dialogInProgress: true })
     const result = await apiCallPost(
@@ -31,18 +19,15 @@ export async function apiSignIn(login, password, setState) {
         password,
       },
     )
-    setState(authenticateState(validateApiResult(result)))
-    return true
+    return validateApiResult(result)
   } catch (e) {
     alertError(e)
-    setState({ dialogInProgress: false })
     return false
   }
 }
 
-export async function apiSignUp(login, password, role, setState) {
+export async function apiSignUp(login, password, role) {
   try {
-    setState({ dialogInProgress: true })
     const result = await apiCallPost(
       '/signup',
       {
@@ -51,18 +36,15 @@ export async function apiSignUp(login, password, role, setState) {
         role,
       },
     )
-    setState(authenticateState(validateApiResult(result)))
-    return true
+    return validateApiResult(result)
   } catch (e) {
     alertError(e)
-    setState({ dialogInProgress: false })
     return false
   }
 }
 
 export async function apiLoadTasks(dateBegin, dateLast, accessToken, setState) {
   try {
-    setState({ inProgress: true })
     const result = await apiCallGet(
       '/task-list',
       {
@@ -72,14 +54,9 @@ export async function apiLoadTasks(dateBegin, dateLast, accessToken, setState) {
       accessToken
     )
     const { data } = validateApiResult(result)
-    setState({
-      tasks: data,
-      inProgress: false,
-    })
-    return true
+    return data
   } catch (e) {
     alertError(e)
-    setState({ inProgress: false })
     return false
   }
 }
@@ -119,6 +96,39 @@ export async function apiDeleteTask(id, accessToken) {
     const result = await apiCallPost(
       '/task-delete',
       {id},
+      accessToken
+    )
+    validateApiResult(result)
+    return true
+  } catch (e) {
+    alertError(e)
+    return false
+  }
+}
+
+export async function apiLoadUsers(accessToken) {
+  try {
+    const result = await apiCallGet(
+      '/users-list',
+      {},
+      accessToken
+    )
+    const { data } = validateApiResult(result)
+    return data
+  } catch (e) {
+    alertError(e)
+    return false
+  }
+}
+
+export async function apiUpdateUser(id, workingHoursPerDay, accessToken) {
+  try {
+    const result = await apiCallPost(
+      '/user-update',
+      {
+        id,
+        workingHoursPerDay,
+      },
       accessToken
     )
     validateApiResult(result)

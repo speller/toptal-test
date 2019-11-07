@@ -20,3 +20,9 @@ services:
         $taskProvider: '@task_provider'
         $userProvider: '@user_provider'
 
+    user_controller:
+      public: true
+      class: App\User\UserController
+      arguments:
+        $userProvider: '@user_provider'
+

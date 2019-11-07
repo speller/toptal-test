@@ -96,7 +96,8 @@ class SqlTaskProvider extends MySqlProviderHelper implements TaskProviderInterfa
                 "SELECT t.* FROM tasks t 
                 JOIN users u ON u.id = t.user_id
                 WHERE (t.`date` >= :date_begin) AND (t.`date` <= :date_last) AND 
-                (t.user_id = :user_id OR u.role IN :roles)",
+                (t.user_id = :user_id OR u.role IN :roles)
+                ORDER BY `date` ASC, u.login ASC",
                 [
                     'date_begin' => $dateBegin,
                     'date_last' => $dateLast,
@@ -110,7 +111,9 @@ class SqlTaskProvider extends MySqlProviderHelper implements TaskProviderInterfa
                     'date >=' => $dateBegin,
                     'date <=' => $dateLast,
                     'user_id' => $userId,
-                ]
+                ],
+                null,
+                '`date` ASC'
             );
         }
     }

@@ -15,16 +15,16 @@ import SignInDialog from '../SignInDialog'
 import {
   apiCreateTask,
   apiDeleteTask,
+  apiLoadUsers,
   apiLoadTasks,
   apiSignIn,
   apiSignUp,
   apiUpdateTask,
+  apiUpdateUser,
 } from './api'
 import TaskDialog from '../TaskDialog'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
-import TextField from '@material-ui/core/TextField'
-import Icon from '@material-ui/core/Icon'
 import Filter from '../Filter'
 
 const dateFormat = 'YYYY-MM-DD'
@@ -56,6 +56,18 @@ function getDefaultTaskState() {
   }
 }
 
+function authenticateState(result) {
+  const { data, accessToken } = result
+  return {
+    accessToken,
+    login: data.login,
+    id: data.id,
+    isLoggedIn: true,
+    signInDlgOpen: false,
+    dialogInProgress: false,
+  }
+}
+
 /**
  * Root page component
  * @param props
@@ -71,15 +83,18 @@ function Root(props) {
       login: null,
       id: null,
     }),
+    users: [],
     signInDlgOpen: false,
     dialogInProgress: false,
   })
   const [taskState, _setTaskState] = useState(getDefaultTaskState())
-  const [filterState, _setFilterState] = useState(getFilterStorageData({
-    hoursPerDay: 8,
-    dateFrom: moment().subtract(1, 'years').format(dateFormat),
-    dateTo: moment().format(dateFormat),
-  }))
+  const [filterState, _setFilterState] = useState({
+    ... getFilterStorageData({
+      dateFrom: moment().subtract(1, 'months').format(dateFormat),
+      dateTo: moment().format(dateFormat),
+    }),
+    hoursPerDay: 0,
+  })
 
   const setAuthState = (props) => {
     _setAuthState({...authState, ...props})
@@ -106,40 +121,82 @@ function Root(props) {
       accessToken: null,
       login: null,
       id: null,
+      users: [],
     })
   }
 
   useEffect(() => {
-    handleLoadTasks()
     setAuthStorageData({
       isLoggedIn: authState.isLoggedIn,
       accessToken: authState.accessToken,
       login: authState.login,
       id: authState.id,
+      users: [],
     })
   }, [authState.isLoggedIn])
 
   useEffect(() => {
     handleLoadTasks()
-  }, [filterState.dateFrom, filterState.dateTo])
+  }, [authState.isLoggedIn, filterState.dateFrom, filterState.dateTo])
 
   useEffect(() => {
     setFilterStorageData(filterState)
-  }, [filterState.dateFrom, filterState.dateTo, filterState.hoursPerDay])
+  }, [filterState.dateFrom, filterState.dateTo])
 
-  const handleSignIn = (login, password) => {
-    apiSignIn(login, password, setAuthState)
+  useEffect(() => {
+    console.log('effect')
+    handleUpdateWorkingHours()
+  }, [filterState.hoursPerDay])
+
+  const handleSignIn = async(login, password) => {
+    setAuthState({ dialogInProgress: true })
+    const data = await apiSignIn(login, password, setAuthState)
+    if (data) {
+      setAuthState(authenticateState(data))
+      setFilterState({
+        hoursPerDay: data.data.workingHoursPerDay,
+      })
+    } else {
+      setAuthState({ dialogInProgress: false })
+    }
   }
 
-  const handleSignUp = (login, password, role) => {
-    apiSignUp(login, password, role, setAuthState)
+  const handleSignUp = async(login, password, role) => {
+    setAuthState({ dialogInProgress: true })
+    const data = await apiSignUp(login, password, role)
+    if (data) {
+      setAuthState(authenticateState(data))
+      setFilterState({
+        hoursPerDay: data.data.workingHoursPerDay,
+      })
+    } else {
+      setAuthState({ dialogInProgress: false })
+    }
   }
 
-  const handleLoadTasks = () => {
-    if (!authState.isLoggedIn) {
+  const handleLoadTasks = async() => {
+    if (!authState.isLoggedIn || taskState.inProgress) {
       return
     }
-    apiLoadTasks(filterState.dateFrom, filterState.dateTo, authState.accessToken, setTaskState)
+    setTaskState({ inProgress: true })
+    const tasks = await apiLoadTasks(filterState.dateFrom, filterState.dateTo, authState.accessToken)
+    if (tasks !== false) {
+      const users = await apiLoadUsers(authState.accessToken)
+      if (users !== false) {
+        setAuthState({
+          users,
+        })
+        setTaskState({
+          tasks,
+          inProgress: false,
+        })
+        setFilterState({
+          hoursPerDay: lookupUser(authState.id, users).workingHoursPerDay,
+        })
+      }
+    } else {
+      setTaskState({ inProgress: false })
+    }
   }
 
   const handleTaskDlgClose = () => {
@@ -188,7 +245,13 @@ function Root(props) {
       )
       if (newId !== null) {
         const newTasks = [...taskState.tasks]
-        newTasks.push({...taskState.dialogTask, id: newId})
+        newTasks.push({
+          ...taskState.dialogTask,
+          id: newId,
+          title,
+          date,
+          duration,
+        })
         setTaskState({
           tasks: newTasks,
           inProgress: false,
@@ -247,26 +310,80 @@ function Root(props) {
     })
   }
 
+  const handleUpdateWorkingHours = async() => {
+    if (!authState.isLoggedIn || authState.users.length === 0 || filterState.hoursPerDay === 0) {
+      return
+    }
+    console.log('update hours', filterState.hoursPerDay)
+    await apiUpdateUser(authState.id, filterState.hoursPerDay, authState.accessToken)
+    handleUpdateUsers()
+  }
+
+  const handleUpdateUsers = async() => {
+    if (!authState.isLoggedIn) {
+      return
+    }
+    const users = await apiLoadUsers(authState.accessToken)
+    if (users !== false) {
+      setAuthState({
+        users,
+      })
+    }
+  }
+
+  console.log('hours', filterState.hoursPerDay)
+  const renderTasksContext = {
+    sumHoursPerDay: {},
+    lastGroup: '',
+  }
+
+  taskState.tasks.forEach(task => {
+    const groupKey = `${task.userId}-${task.date}`
+    if (!renderTasksContext.sumHoursPerDay[groupKey]) {
+      renderTasksContext.sumHoursPerDay[groupKey] = 0
+    }
+    renderTasksContext.sumHoursPerDay[groupKey] += task.duration
+  })
+
+  const lookupUser = (id, users) => (users ? users : authState.users).find(user => user.id === id)
+
   const renderTask = task => {
+    const groupKey = `${task.userId}-${task.date}`
+    const printDate = groupKey !== renderTasksContext.lastGroup
+    if (printDate) {
+      renderTasksContext.lastGroup = groupKey
+    }
+    const taskUser = lookupUser(task.userId)
+    const cardBkColor =
+      renderTasksContext.sumHoursPerDay[groupKey] > taskUser.workingHoursPerDay
+        ? '#caffca'
+        : 'mistyrose'
+
     return (
-      <Card key={task.id} className={classes.taskCard}>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            #{task.id} {task.title}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Date: {task.date}, Duration: {task.duration} h.
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small" color="primary" onClick={() => handleEditTask(task.id)}>
-            Edit
-          </Button>
-          <Button size="small" color="primary" onClick={() => handleDeleteTask(task.id)}>
-            Delete
-          </Button>
-        </CardActions>
-      </Card>
+      <React.Fragment key={task.id}>
+        {printDate &&
+        <Typography variant="h5">
+          {task.date} {taskUser.login} ({taskUser.workingHoursPerDay})
+        </Typography>}
+        <Card className={classes.taskCard}>
+          <CardContent style={{backgroundColor: cardBkColor}}>
+            <Typography gutterBottom variant="h5" component="h2">
+              #{task.id} {task.title}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Duration: {task.duration} h.
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="small" color="primary" onClick={() => handleEditTask(task.id)}>
+              Edit
+            </Button>
+            <Button size="small" color="primary" onClick={() => handleDeleteTask(task.id)}>
+              Delete
+            </Button>
+          </CardActions>
+        </Card>
+      </React.Fragment>
     )
   }
 

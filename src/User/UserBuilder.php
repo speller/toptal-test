@@ -43,6 +43,21 @@ class UserBuilder
     }
 
     /**
+     * Assign values in the builder from another user object
+     * @param User $src
+     * @return UserBuilder
+     */
+    public function assignFrom(User $src): UserBuilder
+    {
+        $this->id = $src->getId();
+        $this->role = $src->getRole();
+        $this->passwordHash = $src->getPasswordHash();
+        $this->role = $src->getRole();
+        $this->workingHoursPerDay = $src->getWorkingHoursPerDay();
+        return $this;
+    }
+
+    /**
      * @param int $id
      * @return UserBuilder
      */

@@ -67,4 +67,28 @@ class SqlUserProvider extends MySqlProviderHelper implements UserProviderInterfa
     {
         return $this->findById($id);
     }
+
+    /**
+     * @inheritDoc
+     * @throws \Exception
+     */
+    public function getUsersByRoles(array $roles): array
+    {
+        return $this->fetchBy('role', $roles, 'login ASC');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function updateUser(User $user): void
+    {
+        $this->update(
+            [
+                'hours_per_day' => $user->getWorkingHoursPerDay(),
+            ],
+            [
+                'id' => $user->getId(),
+            ]
+        );
+    }
 }

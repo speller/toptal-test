@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import makeStyles from '@material-ui/core/styles/makeStyles'
@@ -32,9 +32,13 @@ function Filter(props) {
     dateFrom,
     dateTo,
   })
+  console.log('filter hours', hoursPerDay, state.hoursPerDay)
   const setState = (props) => {
     _setState({ ...state, ...props })
   }
+  useEffect(() => {
+    setState({hoursPerDay})
+  }, [hoursPerDay])
 
   const handleChangeHoursPerDay = event => {
     setState({hoursPerDay: event.target.value})
@@ -51,7 +55,7 @@ function Filter(props) {
   const handleFilter = event => {
     event.preventDefault()
     if (!disabled) {
-      onFilter(state.hoursPerDay, state.dateFrom, state.dateTo)
+      onFilter(Number(state.hoursPerDay), state.dateFrom, state.dateTo)
     }
   }
 

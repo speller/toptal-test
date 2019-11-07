@@ -31,3 +31,13 @@ task_list:
   path: /task-list
   methods: [GET]
   controller: task_controller:listTasks
+
+users_list:
+  path: /users-list
+  methods: [GET]
+  controller: user_controller:listUsers
+
+user_update:
+  path: /user-update
+  methods: [POST]
+  controller: user_controller:updateUser
