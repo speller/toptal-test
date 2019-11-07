@@ -79,17 +79,32 @@ export async function apiLoadTasks(dateBegin, dateLast, accessToken, setState) {
   }
 }
 
-export async function apiCreateTask(data, accessToken) {
+export async function apiCreateTask(taskData, accessToken) {
   try {
     const result = await apiCallPost(
       '/task-add',
-      data,
+      taskData,
       accessToken
     )
-    const { resData } = validateApiResult(result)
-    return resData
+    const { data } = validateApiResult(result)
+    return data
   } catch (e) {
     alertError(e)
     return null
+  }
+}
+
+export async function apiDeleteTask(id, accessToken) {
+  try {
+    const result = await apiCallPost(
+      '/task-delete',
+      {id},
+      accessToken
+    )
+    validateApiResult(result)
+    return true
+  } catch (e) {
+    alertError(e)
+    return false
   }
 }

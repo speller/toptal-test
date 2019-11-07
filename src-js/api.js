@@ -1,5 +1,4 @@
 import axios from 'axios'
-import isObject from 'lodash-es/isObject'
 
 const API_BASE_URL = 'http://localhost:8000'
 
@@ -35,8 +34,8 @@ export function validateApiResult(result) {
   if (!apiResult) {
     throw new Error('Undefined API result')
   }
-  if (!isObject(apiResult)) {
-    throw new Error('Invalid API call result. Object expected.')
+  if (apiResult === void 0) {
+    throw new Error('API did not return any result')
   }
   if (!apiResult.success) {
     throw new Error(`API call failed with message: ${getMessageFromResponse(result)}.`)

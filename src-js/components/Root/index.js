@@ -13,7 +13,7 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import SignInDialog from '../SignInDialog'
-import { apiCreateTask, apiLoadTasks, apiSignIn, apiSignUp, } from './api'
+import { apiCreateTask, apiDeleteTask, apiLoadTasks, apiSignIn, apiSignUp, } from './api'
 import TaskDialog from '../TaskDialog'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
@@ -128,9 +128,12 @@ function Root(props) {
         authState.accessToken,
       )
       if (newId !== null) {
+        const newTasks = [...taskState.tasks]
+        newTasks.push({...taskState.dialogTask, id: newId})
         setTaskState({
-          tasks: taskState.tasks.push({...taskState.dialogTask, id: newId}),
+          tasks: newTasks,
           inProgress: false,
+          taskDlgOpen: false,
           dialogTask: {},
         })
       } else {
@@ -151,13 +154,31 @@ function Root(props) {
     })
   }
 
+  const handleDeleteTask = async(id) => {
+    if (!id) {
+      return
+    }
+    if (confirm(`Are you sure deleting task #${id} ?`)) {
+      setTaskState({ inProgress: true })
+      if (await apiDeleteTask(id, authState.accessToken)) {
+        setTaskState({
+          inProgress: false,
+          tasks: taskState.tasks.filter(task => task.id !== id),
+          dialogTask: {},
+        })
+      } else {
+        setTaskState({ inProgress: false })
+      }
+    }
+  }
+
   const renderTask = task => {
     return (
       <Card key={task.id} className={classes.taskCard}>
         <CardActionArea>
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              {task.title}
+              #{task.id} {task.title}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
               Duration: {task.duration} h.
@@ -168,7 +189,7 @@ function Root(props) {
           <Button size="small" color="primary">
             Edit
           </Button>
-          <Button size="small" color="primary">
+          <Button size="small" color="primary" onClick={() => handleDeleteTask(task.id)}>
             Delete
           </Button>
         </CardActions>
