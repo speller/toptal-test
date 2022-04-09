@@ -17,7 +17,7 @@
     "babel-polyfill": "^6.26.0",
     "core-js": "^3.0.1",
     "lodash-es": "^4.17.11",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "prop-types": "^15.7.2",
     "rc-slider": "^8.1.0",
     "react": "^16.8.4",
